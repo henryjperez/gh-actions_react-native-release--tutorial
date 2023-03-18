@@ -47,7 +47,7 @@ jobs:
         run: ls ./android/app/build/outputs/apk/release/ -hal
 
       - name: Rename the .apk to the tag version
-        run: mv ./android/app/build/outputs/apk/release/app-universal-release.apk ./android/app/build/outputs/apk/release/corebill_${{ github.ref_name }}.apk
+        run: mv ./android/app/build/outputs/apk/release/app-universal-release.apk ./android/app/build/outputs/apk/release/app_name_${{ github.ref_name }}.apk
       
 
       # Creating and Uploading the releases
@@ -60,4 +60,4 @@ jobs:
             android/app/build/outputs/apk/release/app-armeabi-v7a-release.apk
             android/app/build/outputs/apk/release/app-x86_64-release.apk
             android/app/build/outputs/apk/release/app-x86-release.apk
-            android/app/build/outputs/apk/release/corebill_${{ github.ref_name }}.apk
+            android/app/build/outputs/apk/release/app_name_${{ github.ref_name }}.apk
