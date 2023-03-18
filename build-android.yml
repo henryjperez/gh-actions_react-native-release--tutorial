@@ -1,0 +1,63 @@
+name: Build Android .apk
+
+run-name: "Building the .apk with the tag triggered by @${{ github.actor }}"
+
+permissions:
+  contents: write
+
+on:
+  push:
+    tags:
+      - "v*"
+    # branches: ["Main"]
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    # runs-on: ubuntu-22.04 # this is the Ubuntu version that this was created on
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: "11"
+          distribution: "adopt"
+          cache: "gradle"
+
+      - name: Validate Gradle wrapper
+        uses: gradle/wrapper-validation-action@v1
+
+      # Node, Yarn and NPM
+      - name: Setup Node  
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Run Yarn Install
+        run: yarn install
+
+      - name: Build application
+        run: yarn release
+
+      - name: List the .apks compiled
+        run: ls ./android/app/build/outputs/apk/release/ -hal
+
+      - name: Rename the .apk to the tag version
+        run: mv ./android/app/build/outputs/apk/release/app-universal-release.apk ./android/app/build/outputs/apk/release/corebill_${{ github.ref_name }}.apk
+      
+
+      # Creating and Uploading the releases
+      - name: Create Release and Uploading Files
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            android/app/build/outputs/apk/release/app-arm64-v8a-release.apk
+            android/app/build/outputs/apk/release/app-armeabi-v7a-release.apk
+            android/app/build/outputs/apk/release/app-x86_64-release.apk
+            android/app/build/outputs/apk/release/app-x86-release.apk
+            android/app/build/outputs/apk/release/corebill_${{ github.ref_name }}.apk
