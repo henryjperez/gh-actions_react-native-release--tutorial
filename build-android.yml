@@ -9,7 +9,6 @@ on:
   push:
     tags:
       - "v*"
-    # branches: ["Main"]
 
 
 jobs:
